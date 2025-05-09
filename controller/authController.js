@@ -200,15 +200,17 @@ export const editPost = async(req,res) => {
 }
 
 export const deletePost = async(req,res) => {
+     const postId = req.params.postId;
     try {
-        const post = await Post.findById(req.params.id)
+         const objectId = mongoose.Types.ObjectId(postId);
+         const post = await Post.findByIdAndDelete(objectId);
         if(!post){
             return res.status(400).json({message:"Post does not exist"})
         }
         if(post.postedBy.toString() !== req.userId){
             return res.status(400).json({message:"You are not authorized to delete this post"})
         }
-        await post.remove()
+       
         res.status(200).json({success:true, message:"Post deleted successfully"})
     }catch(err){
         res.status(400).json({message:err})
