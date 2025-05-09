@@ -1,6 +1,7 @@
 import {User, Post} from "../modes/userModel.js"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
+import mongoose from "mongoose"
 
 import {generateTokenAndSetCookie} from "../utils/verifyCode.js"
 
@@ -198,24 +199,31 @@ export const editPost = async(req,res) => {
         res.status(400).json({message:err})
     }
 }
+export const deletePost = async (req, res) => {
+  const postId = req.params.postId;
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(400).json({ message: "Invalid post ID format" });
+  }
 
-export const deletePost = async(req,res) => {
-     const postId = req.params.postId;
-    try {
-         const objectId = mongoose.Types.ObjectId(postId);
-         const post = await Post.findByIdAndDelete(objectId);
-        if(!post){
-            return res.status(400).json({message:"Post does not exist"})
-        }
-        if(post.postedBy.toString() !== req.userId){
-            return res.status(400).json({message:"You are not authorized to delete this post"})
-        }
-       
-        res.status(200).json({success:true, message:"Post deleted successfully"})
-    }catch(err){
-        res.status(400).json({message:err})
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post does not exist" });
     }
-}
+
+    if (post.postedBy.toString() !== req.userId) {
+      return res.status(403).json({ message: "You are not authorized to delete this post" });
+    }
+
+    await post.deleteOne(); 
+    return res.status(200).json({ success: true, message: "Post deleted successfully" });
+    
+  } catch (err) {
+    console.error('Delete error:', err);
+    return res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
 
 export const createComment = async(req,res) => {
     const {content} = req.body
