@@ -200,7 +200,7 @@ export const editPost = async(req,res) => {
     }
 }
 export const deletePost = async (req, res) => {
-  const postId = req.params.postId;
+  const postId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(postId)) {
     return res.status(400).json({ message: "Invalid post ID format" });
   }
