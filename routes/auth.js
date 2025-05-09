@@ -22,7 +22,7 @@ router.get('/allPosts', getAllPosts)
 router.post('/post',verifyToken, createPost)
 router.post('/comment/:postId', createComment)
 router.put('/editPost/:id', editPost)
-router.delete('/delete/:id', deletePost)
+router.delete('/delete/:id',verifyToken, deletePost)
 
  export default router
 
