@@ -1,5 +1,6 @@
 import express from 'express'
 import {verifyToken} from "../middleware/verifyToken.js";
+import { authMiddleware } from '../utils/verifyCode.js';
 import { login, signup, logout, verifyEmail, forgotPassword, resetPassword, checkAuth, getAllPosts, createPost, editPost, createComment, deletePost} from '../controller/authController.js'
  const router = express.Router()
 
@@ -18,7 +19,7 @@ router.get("/check-auth",verifyToken, checkAuth )
 router.post("/reset-password/:token", resetPassword)
 
 router.get('/allPosts', getAllPosts)
-router.post('/post', createPost)
+router.post('/post',verifyToken, createPost)
 router.post('/comment/:postId', createComment)
 router.put('/editPost/:id', editPost)
 router.delete('/delete/:id', deletePost)
